@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import { QRCodeSVG } from 'qrcode.react'
 import { Copy, Share2 } from 'lucide-react'
 import { playSfx } from '@/lib/sfx'
@@ -10,9 +11,11 @@ interface InviteCardProps {
 }
 
 export function InviteCard({ code, operationId }: InviteCardProps) {
-  const link = typeof window !== 'undefined'
-    ? `${window.location.origin}/join/${code}`
-    : `/join/${code}`
+  const [link, setLink] = useState(`/join/${code}`)
+
+  useEffect(() => {
+    setLink(`${window.location.origin}/join/${code}`)
+  }, [code])
 
   const handleCopy = () => {
     navigator.clipboard?.writeText(link)
