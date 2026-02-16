@@ -79,14 +79,7 @@ export default async function ProfilePage() {
   const badgesRaw: unknown[] = Array.isArray(profile.badges_earned) ? profile.badges_earned : []
   const badges = badgesRaw.map((badge) => {
     if (typeof badge === 'string') return badge
-    if ({currentOperation && (
-          <CurrentOperationCard 
-            operation={currentOperation as any} 
-            isCreator={isCreator || false}
-          />
-        )}
-
-        badge && typeof badge === 'object') {
+    if (badge && typeof badge === 'object') {
       const data = badge as BadgeValue
       return data.name || data.type || 'Badge'
     }
@@ -98,6 +91,13 @@ export default async function ProfilePage() {
     <TopBar title="AGENTE" subtitle={<Typewriter text={profile.rank || 'RECRUTA'} speed={30} delay={200} />} />
     <div className="py-4 px-4">
       <div className="max-w-md mx-auto space-y-4">
+        {currentOperation && (
+          <CurrentOperationCard 
+            operation={currentOperation as any} 
+            isCreator={isCreator || false}
+          />
+        )}
+
         <Card>
           <div className="space-y-6">
             <div className="flex items-start gap-4">

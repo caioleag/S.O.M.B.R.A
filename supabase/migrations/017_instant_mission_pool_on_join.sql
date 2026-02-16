@@ -13,15 +13,14 @@ AS $$
 DECLARE
   existing_pool_id uuid;
   selected_missions uuid[];
-  all_missions_data record[];
   category_chosen text;
   categories text[] := ARRAY['vigilancia', 'coleta', 'infiltracao', 'disfarce', 'reconhecimento'];
-  category_missions uuid[];
   easy_missions uuid[];
   medium_missions uuid[];
   hard_missions uuid[];
   remaining_missions uuid[];
   new_pool_id uuid;
+  total_missions int;
 BEGIN
   -- Verifica se já existe um pool para esta operação e dia
   SELECT id INTO existing_pool_id
@@ -35,12 +34,10 @@ BEGIN
     RETURN existing_pool_id;
   END IF;
 
-  -- Busca todas as missões disponíveis
-  SELECT ARRAY_AGG(ROW(id, category, difficulty)::record)
-  INTO all_missions_data
-  FROM public.missions;
-
-  IF all_missions_data IS NULL OR array_length(all_missions_data, 1) = 0 THEN
+  -- Verifica se há missões disponíveis
+  SELECT COUNT(*) INTO total_missions FROM public.missions;
+  
+  IF total_missions = 0 THEN
     RAISE EXCEPTION 'NO_MISSIONS_AVAILABLE';
   END IF;
 
@@ -77,18 +74,18 @@ BEGIN
                        COALESCE(hard_missions, '{}');
 
   -- Se não temos 9 missões, completa com missões aleatórias de qualquer categoria
-  IF array_length(selected_missions, 1) < 9 THEN
+  IF COALESCE(array_length(selected_missions, 1), 0) < 9 THEN
     SELECT ARRAY_AGG(m.id ORDER BY random())
     INTO remaining_missions
     FROM public.missions m
-    WHERE NOT (m.id = ANY(selected_missions))
+    WHERE NOT (m.id = ANY(COALESCE(selected_missions, '{}')))
     LIMIT (9 - COALESCE(array_length(selected_missions, 1), 0));
 
-    selected_missions := selected_missions || COALESCE(remaining_missions, '{}');
+    selected_missions := COALESCE(selected_missions, '{}') || COALESCE(remaining_missions, '{}');
   END IF;
 
   -- Garante que temos ao menos algumas missões
-  IF array_length(selected_missions, 1) = 0 THEN
+  IF COALESCE(array_length(selected_missions, 1), 0) = 0 THEN
     RAISE EXCEPTION 'FAILED_TO_SELECT_MISSIONS';
   END IF;
 
