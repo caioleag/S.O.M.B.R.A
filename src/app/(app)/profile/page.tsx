@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { RankInsignia } from '@/components/rank/RankInsignia'
 import { PushSubscriptionCard } from '@/components/profile/PushSubscriptionCard'
+import { CurrentOperationCard } from '@/components/profile/CurrentOperationCard'
 import { TopBar } from '@/components/layout/TopBar'
 import { Typewriter } from '@/components/ui/Typewriter'
 import Image from 'next/image'
@@ -48,6 +49,18 @@ export default async function ProfilePage() {
     .select('*', { count: 'exact', head: true })
     .eq('user_id', user.id)
 
+  // Get current active/inactive operation
+  const { data: currentOperationMember } = await supabase
+    .from('operation_members')
+    .select('operation_id, operations(id, name, status, creator_id, duration_days, started_at)')
+    .eq('user_id', user.id)
+    .in('operations.status', ['inactive', 'active'])
+    .limit(1)
+    .maybeSingle()
+
+  const currentOperation = currentOperationMember?.operations
+  const isCreator = currentOperation?.creator_id === user.id
+
   const totalSubmissions = missionStats?.length || 0
   const approvedSubmissions = (missionStats || []).filter((row) => row.status === 'completed').length
   const approvalRate = totalSubmissions > 0 ? Math.round((approvedSubmissions / totalSubmissions) * 100) : 0
@@ -66,7 +79,14 @@ export default async function ProfilePage() {
   const badgesRaw: unknown[] = Array.isArray(profile.badges_earned) ? profile.badges_earned : []
   const badges = badgesRaw.map((badge) => {
     if (typeof badge === 'string') return badge
-    if (badge && typeof badge === 'object') {
+    if ({currentOperation && (
+          <CurrentOperationCard 
+            operation={currentOperation as any} 
+            isCreator={isCreator || false}
+          />
+        )}
+
+        badge && typeof badge === 'object') {
       const data = badge as BadgeValue
       return data.name || data.type || 'Badge'
     }

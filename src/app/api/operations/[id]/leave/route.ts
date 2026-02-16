@@ -6,7 +6,8 @@ interface RouteContext {
 }
 
 // Member leaves an operation — removes their row from operation_members
-// Creator cannot leave; they must cancel (DELETE /api/operations/[id])
+// If creator leaves and there are other members, leadership is transferred randomly
+// If last member leaves, operation is cancelled
 export async function POST(_request: Request, context: RouteContext) {
   const { id: operationId } = await context.params
 
@@ -23,16 +24,24 @@ export async function POST(_request: Request, context: RouteContext) {
     .single()
 
   if (!operation) return NextResponse.json({ error: 'Operacao nao encontrada.' }, { status: 404 })
-  if (operation.creator_id === user.id) return NextResponse.json({ error: 'O criador deve encerrar a operacao, nao sair.' }, { status: 400 })
-  if (operation.status !== 'inactive') return NextResponse.json({ error: 'Nao e possivel sair de uma operacao ativa.' }, { status: 400 })
+  
+  // Completed operations cannot be left
+  if (operation.status === 'completed') {
+    return NextResponse.json({ error: 'Nao e possivel sair de uma operacao concluida.' }, { status: 400 })
+  }
 
-  const { error } = await supabase
-    .from('operation_members')
-    .delete()
-    .eq('operation_id', operationId)
-    .eq('user_id', user.id)
+  // Use the new leave_operation function that handles leadership transfer
+  const { data, error } = await supabase.rpc('leave_operation', {
+    p_operation_id: operationId,
+    p_user_id: user.id,
+  })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    if (error.message?.includes('OPERATION_NOT_FOUND')) {
+      return NextResponse.json({ error: 'Operacao nao encontrada.' }, { status: 404 })
+    }
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 
-  return NextResponse.json({ success: true })
+  return NextResponse.json({ success: true, ...data })
 }
