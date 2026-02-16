@@ -76,13 +76,6 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
     [assigned]
   )
 
-  // Redireciona automaticamente para a missão aceita
-  useEffect(() => {
-    if (!loading && selectedAssignedMission) {
-      router.push(`/operations/${operationId}/missions/${selectedAssignedMission.id}`)
-    }
-  }, [loading, selectedAssignedMission, router, operationId])
-
   const handleReceiveMission = () => {
     playSfx('click', 0.3)
     setShowRoulette(true)
@@ -171,13 +164,16 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
     )
   }
 
-  // Se há missão selecionada, redireciona automaticamente (não mostra nada aqui)
+  // Se há missão selecionada, mostra botão para continuar
   if (selectedAssignedMission) {
     return (
-      <div className="px-4 pt-12 pb-4 text-center">
-        <p className="text-[#6b6660] font-['Inter'] text-xs">
-          Redirecionando para sua missao...
-        </p>
+      <div className="px-4 pt-4 pb-6">
+        <Button 
+          fullWidth 
+          onClick={() => router.push(`/operations/${operationId}/missions/${selectedAssignedMission.id}`)}
+        >
+          CONTINUAR MISSAO EM ANDAMENTO
+        </Button>
       </div>
     )
   }
