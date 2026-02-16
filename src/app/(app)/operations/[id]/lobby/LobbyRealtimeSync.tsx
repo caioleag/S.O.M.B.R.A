@@ -13,7 +13,6 @@ export function LobbyRealtimeSync({ operationId }: LobbyRealtimeSyncProps) {
 
   useEffect(() => {
     const supabase = createClient()
-    const refreshLobby = () => router.refresh()
 
     const channel = supabase
       .channel(`lobby-${operationId}`)
@@ -25,7 +24,7 @@ export function LobbyRealtimeSync({ operationId }: LobbyRealtimeSyncProps) {
           table: 'operation_members',
           filter: `operation_id=eq.${operationId}`,
         },
-        refreshLobby
+        () => router.refresh()
       )
       .on(
         'postgres_changes',
@@ -35,7 +34,14 @@ export function LobbyRealtimeSync({ operationId }: LobbyRealtimeSyncProps) {
           table: 'operations',
           filter: `id=eq.${operationId}`,
         },
-        refreshLobby
+        (payload: { new: { status?: string } }) => {
+          const status = payload.new?.status
+          if (status === 'cancelled') {
+            window.location.href = '/operations'
+          } else {
+            router.refresh()
+          }
+        }
       )
       .subscribe()
 

@@ -1,14 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/Button'
 import { playSfx } from '@/lib/sfx'
 
 export function LeaveOperationButton({ operationId }: { operationId: string }) {
   const [confirming, setConfirming] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
 
   const handleLeave = async () => {
     if (!confirming) {
@@ -28,7 +26,7 @@ export function LeaveOperationButton({ operationId }: { operationId: string }) {
       }
 
       playSfx('undo', 0.25)
-      router.push('/operations')
+      window.location.href = '/operations'
     } catch {
       playSfx('error', 0.3)
       setIsLoading(false)

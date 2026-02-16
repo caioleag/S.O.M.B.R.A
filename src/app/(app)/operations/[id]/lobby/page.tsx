@@ -41,6 +41,10 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
     redirect(`/operations/${operationId}`)
   }
 
+  if (operation.status !== 'inactive') {
+    redirect('/operations')
+  }
+
   const { data: members } = await supabase
     .from('operation_members')
     .select('user_id, role, joined_at, profiles(username, avatar_url)')
