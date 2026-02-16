@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { DifficultyBadge } from '@/components/ui/DifficultyBadge'
 import { Typewriter } from '@/components/ui/Typewriter'
+import { Eye, Package, UserCircle, Shirt, MapPin } from 'lucide-react'
 
 const CATEGORY_COLORS = {
   infiltracao: { bg: '#0d1a26', text: '#4a7ab5', border: '#1e3a52' },
@@ -11,6 +12,14 @@ const CATEGORY_COLORS = {
   coleta: { bg: '#1f0d0d', text: '#c94040', border: '#3f1e1e' },
   disfarce: { bg: '#150d1f', text: '#8a5abf', border: '#2a1e3f' },
   reconhecimento: { bg: '#1f180d', text: '#c9a227', border: '#3f320e' },
+}
+
+const CATEGORY_ICONS = {
+  vigilancia: Eye,
+  coleta: Package,
+  infiltracao: UserCircle,
+  disfarce: Shirt,
+  reconhecimento: MapPin,
 }
 
 interface MissionCardProps {
@@ -30,9 +39,15 @@ interface MissionCardProps {
 export function MissionCard({ mission, isSelected = false, onAccept, disabled = false }: MissionCardProps) {
   const categoryKey = mission.category.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') as keyof typeof CATEGORY_COLORS
   const colors = CATEGORY_COLORS[categoryKey] || CATEGORY_COLORS.vigilancia
+  const Icon = CATEGORY_ICONS[categoryKey] || Eye
 
   return (
     <Card className={`border-l-4 ${isSelected ? 'border-[#3d3520] bg-[#0f0e0a]' : ''}`}>
+      {/* Ícone grande da categoria */}
+      <div className="flex justify-center mb-4 mt-2">
+        <Icon size={56} style={{ color: colors.text, opacity: 0.75 }} strokeWidth={1.5} />
+      </div>
+
       <div className="flex items-start justify-between mb-3">
         <span className="text-[10px] font-['Special_Elite'] uppercase tracking-wider" style={{ color: colors.text }}>
           {mission.category}

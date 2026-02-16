@@ -6,13 +6,21 @@ import { createClient } from '@/lib/supabase/client'
 import { TopBar } from '@/components/layout/TopBar'
 import { Button } from '@/components/ui/Button'
 import { CATEGORY_LABELS, CATEGORY_COLORS, getDifficultyDots, getDifficultyColor } from '@/lib/utils'
-import { Camera, X, ChevronLeft } from 'lucide-react'
+import { Camera, X, ChevronLeft, Eye, Package, UserCircle, Shirt, MapPin } from 'lucide-react'
 import imageCompression from 'browser-image-compression'
 import Image from 'next/image'
 import Link from 'next/link'
 import type { AssignedMission, Mission } from '@/lib/supabase/types'
 import { playSfx } from '@/lib/sfx'
 import { Typewriter } from '@/components/ui/Typewriter'
+
+const CATEGORY_ICONS = {
+  vigilancia: Eye,
+  coleta: Package,
+  infiltracao: UserCircle,
+  disfarce: Shirt,
+  reconhecimento: MapPin,
+} as const
 
 interface Props {
   params: { id: string; missionId: string }
@@ -96,6 +104,8 @@ export default function ActiveMissionPage({ params }: Props) {
   }
 
   const catColors = CATEGORY_COLORS[mission.category] || CATEGORY_COLORS.vigilancia
+  const categoryKey = mission.category.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') as keyof typeof CATEGORY_ICONS
+  const Icon = CATEGORY_ICONS[categoryKey] || Eye
 
   return (
     <div className="min-h-screen bg-base pb-20">
@@ -108,6 +118,11 @@ export default function ActiveMissionPage({ params }: Props) {
         {/* Classified stamp */}
         <div>
           <span className="stamp stamp-classified">[CLASSIFICADO]</span>
+        </div>
+
+        {/* Ícone grande da categoria */}
+        <div className="flex justify-center py-4">
+          <Icon size={72} style={{ color: catColors.text, opacity: 0.8 }} strokeWidth={1.5} />
         </div>
 
         {/* Mission header */}
