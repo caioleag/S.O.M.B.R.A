@@ -139,9 +139,7 @@ export default function ActiveMissionPage({ params }: Props) {
       <div className="min-h-screen bg-base pb-20">
         <TopBar
           title="MISSÃO CONCLUÍDA"
-          left={<Link href={`/operations/${resolvedParams.id}`}><ChevronLeft size={18} className="text-ink-muted" /></Link>}
-        />
-
+        left={<Link href={`/operations/${resolvedParams.id}?tab=feed`}><ChevronLeft size={18} className="text-ink-muted" /></Link>}
         <div className="px-4 py-6 max-w-sm mx-auto space-y-5">
           {/* Success stamp */}
           <div className="text-center">
@@ -212,9 +210,9 @@ export default function ActiveMissionPage({ params }: Props) {
           <Button
             fullWidth
             variant="secondary"
-            onClick={() => router.push(`/operations/${resolvedParams.id}`)}
+            onClick={() => router.push(`/operations/${resolvedParams.id}?tab=feed`)}
           >
-            VOLTAR PARA OPERAÇÃO
+            VOLTAR PARA SINAL
           </Button>
         </div>
       </div>
@@ -225,7 +223,7 @@ export default function ActiveMissionPage({ params }: Props) {
     <div className="min-h-screen bg-base pb-20">
       <TopBar
         title="MISSÃO ATIVA"
-        left={<Link href={`/operations/${resolvedParams.id}`}><ChevronLeft size={18} className="text-ink-muted" /></Link>}
+        left={<Link href={`/operations/${resolvedParams.id}?tab=missions`}><ChevronLeft size={18} className="text-ink-muted" /></Link>}
       />
 
       <div className="px-4 py-6 max-w-sm mx-auto space-y-5">
