@@ -8,19 +8,26 @@ export type SfxName =
   | 'undo'
   | 'secret'
   | 'morse'
-  | 'nav-morse'
 
 const SFX_SRC: Record<SfxName, string> = {
-  click: '/audio/ui-click.wav',
-  navigate: '/audio/hi-tech-click.wav',
-  success: '/audio/snap-click.wav',
-  error: '/audio/undo.wav',
-  mission: '/audio/button-click.mp3',
-  submit: '/audio/gol-morse.mp3',
+  // Small UI tap — buttons, toggles, selections
+  click: '/audio/click-small.mp3',
+  // Medium click — nav transitions, tab changes
+  navigate: '/audio/click-medium.mp3',
+  // Synth tone — mission completion, operation started
+  success: '/audio/synth-tone.wav',
+  // Impulse hit — rejection, errors, failed actions
+  error: '/audio/impulse.wav',
+  // Gentle open — mission assigned, new operation
+  mission: '/audio/menu-open.wav',
+  // Gentle open — form submissions
+  submit: '/audio/menu-open.wav',
+  // Soft click — undo / leave / cancel
   undo: '/audio/undo.wav',
+  // Secret discovery
   secret: '/audio/secret.mp3',
+  // Morse code ambiance
   morse: '/audio/morse-signomas.wav',
-  'nav-morse': '/audio/morsert.wav',
 }
 
 const baseAudio = new Map<SfxName, HTMLAudioElement>()
