@@ -11,6 +11,19 @@ function getRedirectTarget() {
   return value.startsWith('/') ? value : '/'
 }
 
+function getAuthOrigin() {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL?.trim()
+  if (configured?.startsWith('http://') || configured?.startsWith('https://')) {
+    return configured.replace(/\/$/, '')
+  }
+
+  if (typeof window !== 'undefined') {
+    return window.location.origin
+  }
+
+  return ''
+}
+
 export default function LoginPage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
@@ -43,11 +56,12 @@ export default function LoginPage() {
     setIsLoading(true);
     playSfx('secret', 0.25);
     const redirectTarget = getRedirectTarget()
+    const authOrigin = getAuthOrigin()
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectTarget)}`
+          redirectTo: `${authOrigin}/auth/callback?next=${encodeURIComponent(redirectTarget)}`
         }
       });
 

@@ -24,11 +24,11 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: "/icons/icon-round-128.png", type: "image/png" },
+      { url: "/icons/icon-square-128.png", type: "image/png" },
       { url: "/icons/icon-square.svg", type: "image/svg+xml" }
     ],
     apple: "/icons/icon-square-128.png",
-    shortcut: "/icons/icon-round-128.png"
+    shortcut: "/icons/icon-square-128.png"
   },
   appleWebApp: {
     capable: true,
