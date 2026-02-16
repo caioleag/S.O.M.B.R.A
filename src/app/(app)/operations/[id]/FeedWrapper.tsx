@@ -16,10 +16,12 @@ type FeedItem = {
   status: 'available' | 'selected' | 'completed' | 'failed' | 'rejected'
   photo_url: string | null
   caption: string | null
+  decision?: 'approved' | 'rejected' | null
   missions?: {
     title: string
     category: string
     difficulty: 'easy' | 'medium' | 'hard'
+    objective: string
   } | null
   profiles?: {
     id: string
@@ -52,8 +54,8 @@ export function FeedWrapper({ operationId, userId }: Props) {
     const { data, error } = await supabase
       .from('assigned_missions')
       .select(
-        `id, operation_id, user_id, status, photo_url, caption, submitted_at,
-         missions!assigned_missions_mission_id_fkey(title,category,difficulty),
+        `id, operation_id, user_id, status, photo_url, caption, submitted_at, decision,
+         missions!assigned_missions_mission_id_fkey(title,category,difficulty,objective),
          profiles!assigned_missions_user_id_fkey(id,username,avatar_url),
          votes!votes_assigned_mission_id_fkey(voter_id,vote),
          reactions!reactions_assigned_mission_id_fkey(user_id,reaction_type),

@@ -11,10 +11,11 @@ interface VoteButtonsProps {
     user_id: string;
     vote: 'approve' | 'reject';
   }[];
+  decision?: 'approved' | 'rejected' | null;
   onVote: (submissionId: string, vote: 'approve' | 'reject') => Promise<void>;
 }
 
-export function VoteButtons({ submissionId, currentUserId, submitterId, votes, onVote }: VoteButtonsProps) {
+export function VoteButtons({ submissionId, currentUserId, submitterId, votes, decision, onVote }: VoteButtonsProps) {
   const [isVoting, setIsVoting] = useState(false);
   const isOwnSubmission = currentUserId === submitterId;
   const userVote = votes.find(v => v.user_id === currentUserId);
@@ -41,6 +42,21 @@ export function VoteButtons({ submissionId, currentUserId, submitterId, votes, o
         <div className="text-center py-2">
           <span className="text-[#3a3632] font-['Inter'] text-xs">
             SUA EVIDÊNCIA
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // Se já foi decidido, não mostra botões de voto
+  if (decision) {
+    return (
+      <div className="pt-3 border-t border-[#1a1a1a]">
+        <div className="text-center py-2">
+          <span className={`font-['Special_Elite'] text-xs uppercase tracking-wider ${
+            decision === 'approved' ? 'text-[#4a8c4a]' : 'text-[#c94040]'
+          }`}>
+            {decision === 'approved' ? '✓ VOTAÇÃO ENCERRADA - APROVADO' : '✗ VOTAÇÃO ENCERRADA - REJEITADO'}
           </span>
         </div>
       </div>

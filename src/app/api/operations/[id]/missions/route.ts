@@ -53,22 +53,13 @@ export async function GET(_request: Request, context: RouteContext) {
       return NextResponse.json({ missions: [], assigned: [] })
     }
 
-    const categories = ['vigilancia', 'coleta', 'infiltracao', 'disfarce', 'reconhecimento']
-    const category = categories[Math.floor(Math.random() * categories.length)]
-    const categoryMissions = allMissions.filter((mission) => mission.category === category)
+    // Pool agora é compartilhado mas só contém IDs (3 de cada dificuldade de cada categoria)
+    // Categoria será sorteada individualmente por usuário
+    const easy = sample(allMissions.filter((mission) => mission.difficulty === 'easy'), 15)
+    const medium = sample(allMissions.filter((mission) => mission.difficulty === 'medium'), 15)
+    const hard = sample(allMissions.filter((mission) => mission.difficulty === 'hard'), 15)
 
-    const easy = sample(categoryMissions.filter((mission) => mission.difficulty === 'easy'), 3)
-    const medium = sample(categoryMissions.filter((mission) => mission.difficulty === 'medium'), 3)
-    const hard = sample(categoryMissions.filter((mission) => mission.difficulty === 'hard'), 3)
-
-    let selected = [...easy, ...medium, ...hard]
-    if (selected.length < 9) {
-      const fallback = sample(
-        allMissions.filter((mission) => !selected.find((picked) => picked.id === mission.id)),
-        9 - selected.length
-      )
-      selected = [...selected, ...fallback]
-    }
+    const selected = [...easy, ...medium, ...hard]
 
     const { data: newPool } = await supabase
       .from('daily_mission_pools')
@@ -85,7 +76,29 @@ export async function GET(_request: Request, context: RouteContext) {
 
   if (!pool) return NextResponse.json({ missions: [], assigned: [] })
 
+  // Verificar se usuário já tem categoria sorteada hoje
+  const { data: userAssigned } = await supabase
+    .from('assigned_missions')
+    .select('category_assigned')
+    .eq('operation_id', operationId)
+    .eq('user_id', user.id)
+    .eq('day_number', dayNumber)
+    .limit(1)
+    .maybeSingle()
+
+  let userCategory: string
+  if (userAssigned?.category_assigned) {
+    userCategory = userAssigned.category_assigned
+  } else {
+    // Sorteia categoria individual para este usuário
+    const categories = ['vigilancia', 'coleta', 'infiltracao', 'disfarce', 'reconhecimento']
+    userCategory = categories[Math.floor(Math.random() * categories.length)]
+  }
+
   const { data: missions } = await supabase.from('missions').select('*').in('id', pool.mission_ids)
+
+  // Filtrar só missões da categoria do usuário
+  const userMissions = missions?.filter(m => m.category === userCategory) || []
 
   const { data: assigned } = await supabase
     .from('assigned_missions')
@@ -95,9 +108,9 @@ export async function GET(_request: Request, context: RouteContext) {
     .eq('day_number', dayNumber)
 
   return NextResponse.json({ 
-    missions: missions || [], 
+    missions: userMissions, 
     assigned: assigned || [],
-    category: pool.mission_ids.length > 0 ? missions?.[0]?.category : null
+    category: userCategory
   })
 }
 

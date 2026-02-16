@@ -23,7 +23,9 @@ interface FeedItem {
     title: string
     category: string
     difficulty: 'easy' | 'medium' | 'hard'
+    objective: string
   } | null
+  decision?: 'approved' | 'rejected' | null
   profiles?: {
     id: string
     username: string | null
@@ -62,10 +64,12 @@ export function FeedCard({ item, currentUserId, onUpdate }: FeedCardProps) {
       title: item.missions?.title || 'Missao sem titulo',
       category: item.missions?.category || 'desconhecida',
       difficulty: item.missions?.difficulty || 'easy',
+      objective: item.missions?.objective || '',
     },
     photo_url: item.photo_url || '',
     caption: item.caption || undefined,
     status: item.status,
+    decision: item.decision,
   }
 
   const votes = useMemo(
@@ -147,8 +151,8 @@ export function FeedCard({ item, currentUserId, onUpdate }: FeedCardProps) {
     }
   }
 
-  const isApproved = submission.status === 'completed'
-  const isRejected = submission.status === 'rejected'
+  const isApproved = submission.decision === 'approved'
+  const isRejected = submission.decision === 'rejected'
 
   return (
     <>
@@ -196,11 +200,13 @@ export function FeedCard({ item, currentUserId, onUpdate }: FeedCardProps) {
           </div>
         ) : null}
 
-        {submission.caption ? (
-          <p className="font-['Inter'] text-[13px] text-[#6b6660] italic mb-2">"{submission.caption}"</p>
-        ) : null}
-
-        <p className="font-['Special_Elite'] text-xs text-[#6b6660] mb-3">{submission.mission.title}</p>
+        <div className="space-y-2 mb-3">
+          <p className="font-['Special_Elite'] text-sm text-[#e8e4d9]">{submission.mission.title}</p>
+          <p className="font-['Inter'] text-[13px] text-[#a39d91] leading-relaxed">{submission.mission.objective}</p>
+          {submission.caption && (
+            <p className="font-['Inter'] text-[13px] text-[#6b6660] italic border-l-2 border-[#242424] pl-2">"{submission.caption}"</p>
+          )}
+        </div>
 
         <div className="mb-3 flex justify-end">
           <FavoriteButton
@@ -216,6 +222,7 @@ export function FeedCard({ item, currentUserId, onUpdate }: FeedCardProps) {
           currentUserId={currentUserId}
           submitterId={submission.user.id}
           votes={votes}
+          decision={submission.decision}
           onVote={handleVote}
         />
 
