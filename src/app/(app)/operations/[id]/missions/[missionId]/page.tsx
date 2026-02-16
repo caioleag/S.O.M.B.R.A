@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import { TopBar } from '@/components/layout/TopBar'
 import { Button } from '@/components/ui/Button'
 import { CATEGORY_LABELS, CATEGORY_COLORS, getDifficultyDots, getDifficultyColor } from '@/lib/utils'
-import { Camera, X, ChevronLeft, Eye, Package, UserCircle, Shirt, MapPin } from 'lucide-react'
+import { Camera, X, ChevronLeft, Eye, Package, UserCircle, Shirt, MapPin, Image as ImageIcon } from 'lucide-react'
 import imageCompression from 'browser-image-compression'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -37,7 +37,8 @@ export default function ActiveMissionPage({ params }: Props) {
   const [resolvedParams, setResolvedParams] = useState<{ id: string; missionId: string } | null>(null)
   const [submittedPhotoUrl, setSubmittedPhotoUrl] = useState<string | null>(null)
   const [votes, setVotes] = useState<{ approved: number; rejected: number }>({ approved: 0, rejected: 0 })
-  const fileRef = useRef<HTMLInputElement>(null)
+  const cameraRef = useRef<HTMLInputElement>(null)
+  const galleryRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -294,19 +295,41 @@ export default function ActiveMissionPage({ params }: Props) {
               </button>
             </div>
           ) : (
-            <button
-              onClick={() => fileRef.current?.click()}
-              className="w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border-gold bg-warm rounded-sm"
-            >
-              <Camera size={32} className="text-border-gold" />
-              <p className="font-spy text-ink-muted text-xs uppercase tracking-wider text-center px-4">
-                Toque para fotografar ou selecionar da galeria
-              </p>
-            </button>
+            <div className="space-y-3">
+              {/* Botão para tirar foto */}
+              <button
+                onClick={() => cameraRef.current?.click()}
+                className="w-full aspect-[4/3] flex flex-col items-center justify-center gap-3 border-2 border-dashed border-border-gold bg-warm rounded-sm hover:bg-[#0f0e0a] transition-colors"
+              >
+                <Camera size={32} className="text-border-gold" />
+                <p className="font-spy text-border-gold text-xs uppercase tracking-wider text-center px-4">
+                  Tirar Foto Agora
+                </p>
+              </button>
+
+              {/* Botão para galeria */}
+              <button
+                onClick={() => galleryRef.current?.click()}
+                className="w-full py-3 flex items-center justify-center gap-2 border border-[#242424] bg-[#0a0a0a] rounded-sm hover:border-border-gold transition-colors"
+              >
+                <ImageIcon size={18} className="text-ink-muted" />
+                <p className="font-spy text-ink-muted text-xs uppercase tracking-wider">
+                  Selecionar da Galeria
+                </p>
+              </button>
+            </div>
           )}
 
           <input
-            ref={fileRef}
+            ref={cameraRef}
+            type="file"
+            accept="image/*"
+            capture="environment"
+            onChange={handlePhotoSelect}
+            className="hidden"
+          />
+          <input
+            ref={galleryRef}
             type="file"
             accept="image/*"
             onChange={handlePhotoSelect}
