@@ -209,7 +209,7 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
       {rouletteComplete && (
         <MissionPool
           missions={missionsWithStatus}
-          selectedMissionId={selectedAssignedMission?.mission_id}
+          selectedMissionId={undefined}
           onSelectMission={handleSelectMission}
           resetHour={resetHour}
         />
