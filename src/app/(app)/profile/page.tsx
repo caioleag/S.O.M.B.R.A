@@ -52,13 +52,13 @@ export default async function ProfilePage() {
   // Get current active/inactive operation
   const { data: currentOperationMember } = await supabase
     .from('operation_members')
-    .select('operation_id, operations(id, name, status, creator_id, duration_days, started_at)')
+    .select('operation_id, operations!inner(id, name, status, creator_id, duration_days, started_at)')
     .eq('user_id', user.id)
     .in('operations.status', ['inactive', 'active'])
     .limit(1)
     .maybeSingle()
 
-  const currentOperation = currentOperationMember?.operations
+  const currentOperation = currentOperationMember?.operations as any
   const isCreator = currentOperation?.creator_id === user.id
 
   const totalSubmissions = missionStats?.length || 0
