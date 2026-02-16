@@ -35,6 +35,8 @@ export default function ActiveMissionPage({ params }: Props) {
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [resolvedParams, setResolvedParams] = useState<{ id: string; missionId: string } | null>(null)
+  const [submittedPhotoUrl, setSubmittedPhotoUrl] = useState<string | null>(null)
+  const [votes, setVotes] = useState<{ approved: number; rejected: number }>({ approved: 0, rejected: 0 })
   const fileRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
@@ -54,8 +56,25 @@ export default function ActiveMissionPage({ params }: Props) {
         if (data) {
           setAssigned(data)
           setMission(data.missions as unknown as Mission)
+          if (data.photo_url) {
+            setSubmittedPhotoUrl(data.photo_url)
+            if (data.caption) setCaption(data.caption)
+          }
         }
         setFetching(false)
+      })
+
+    // Buscar votos se missão está completa
+    supabase
+      .from('votes')
+      .select('vote')
+      .eq('assigned_mission_id', resolvedParams.missionId)
+      .then(({ data }) => {
+        if (data) {
+          const approved = data.filter(v => v.vote === 'approve').length
+          const rejected = data.filter(v => v.vote === 'reject').length
+          setVotes({ approved, rejected })
+        }
       })
   }, [resolvedParams])
 
@@ -112,6 +131,94 @@ export default function ActiveMissionPage({ params }: Props) {
   const catColors = CATEGORY_COLORS[mission.category] || CATEGORY_COLORS.vigilancia
   const categoryKey = mission.category.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') as keyof typeof CATEGORY_ICONS
   const Icon = CATEGORY_ICONS[categoryKey] || Eye
+
+  // Se a missão está concluída, mostra visualização diferente
+  if (assigned.status === 'completed') {
+    return (
+      <div className="min-h-screen bg-base pb-20">
+        <TopBar
+          title="MISSÃO CONCLUÍDA"
+          left={<Link href={`/operations/${resolvedParams.id}`}><ChevronLeft size={18} className="text-ink-muted" /></Link>}
+        />
+
+        <div className="px-4 py-6 max-w-sm mx-auto space-y-5">
+          {/* Success stamp */}
+          <div className="text-center">
+            <span className="inline-block px-4 py-2 border-2 border-[#4a8c4a] bg-[#0d1f0d] text-[#4a8c4a] font-['Special_Elite'] text-xs tracking-wider">
+              ✓ MISSÃO CONCLUÍDA
+            </span>
+          </div>
+
+          {/* Ícone grande da categoria */}
+          <div className="flex justify-center py-2">
+            <Icon size={64} style={{ color: catColors.text, opacity: 0.7 }} strokeWidth={1.5} />
+          </div>
+
+          {/* Mission header */}
+          <div>
+            <p className="font-['Special_Elite'] text-[#6b6660] text-[10px] uppercase tracking-wider mb-1">{mission.category}</p>
+            <h1 className="font-['Special_Elite'] text-[#e8e4d9] text-lg leading-tight">{mission.title}</h1>
+          </div>
+
+          {/* Difficulty + Points */}
+          <div className="flex items-center gap-3 pb-3 border-b border-[#1a1a1a]">
+            <span className="font-mono text-sm" style={{ color: getDifficultyColor(mission.difficulty) }}>
+              {getDifficultyDots(mission.difficulty)}
+            </span>
+            <span className="font-['Special_Elite'] text-[#6b6660] text-xs uppercase">
+              {mission.difficulty === 'easy' ? 'FÁCIL' : mission.difficulty === 'medium' ? 'MÉDIA' : 'DIFÍCIL'}
+            </span>
+            <span className="text-[#6b6660]">|</span>
+            <span className="font-mono text-[#c9a227] text-sm">{mission.points}<span className="text-[#6b6660] text-xs">PT</span></span>
+          </div>
+
+          {/* Votos */}
+          <div className="bg-[#0a0a0a] border border-[#242424] rounded-sm p-4">
+            <p className="font-['Special_Elite'] text-[#6b6660] text-[10px] uppercase tracking-wider mb-3">VALIDAÇÃO DA EQUIPE</p>
+            <div className="flex items-center justify-around">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#4a8c4a] font-mono">{votes.approved}</div>
+                <div className="text-[10px] text-[#6b6660] font-['Special_Elite'] uppercase tracking-wider mt-1">Aprovaram</div>
+              </div>
+              <div className="w-px h-12 bg-[#242424]" />
+              <div className="text-center">
+                <div className="text-2xl font-bold text-[#c94040] font-mono">{votes.rejected}</div>
+                <div className="text-[10px] text-[#6b6660] font-['Special_Elite'] uppercase tracking-wider mt-1">Rejeitaram</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Foto submetida */}
+          {submittedPhotoUrl && (
+            <div>
+              <p className="font-['Special_Elite'] text-[#6b6660] text-xs uppercase tracking-wider mb-3">
+                EVIDÊNCIA FOTOGRÁFICA
+              </p>
+              <div className="relative aspect-[4/3] rounded-sm overflow-hidden border border-[#242424]">
+                <Image src={submittedPhotoUrl} alt="Evidência" fill className="object-cover" />
+              </div>
+            </div>
+          )}
+
+          {/* Caption */}
+          {caption && (
+            <div className="bg-[#0a0a0a] border border-[#242424] rounded-sm p-4">
+              <p className="font-['Special_Elite'] text-[#6b6660] text-[10px] uppercase tracking-wider mb-2">OBSERVAÇÕES</p>
+              <p className="font-['Inter'] text-sm text-[#a39d91] leading-relaxed">{caption}</p>
+            </div>
+          )}
+
+          <Button
+            fullWidth
+            variant="secondary"
+            onClick={() => router.push(`/operations/${resolvedParams.id}`)}
+          >
+            VOLTAR PARA OPERAÇÃO
+          </Button>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-base pb-20">
