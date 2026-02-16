@@ -7,11 +7,9 @@ import { playSfx } from '@/lib/sfx';
 
 interface StartOperationButtonProps {
   operationId: string;
-  canStart: boolean;
-  memberCount: number;
 }
 
-export function StartOperationButton({ operationId, canStart, memberCount }: StartOperationButtonProps) {
+export function StartOperationButton({ operationId }: StartOperationButtonProps) {
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
@@ -50,7 +48,7 @@ export function StartOperationButton({ operationId, canStart, memberCount }: Sta
         variant="primary"
         className="w-full"
         onClick={handleStart}
-        disabled={!canStart || isStarting}
+        disabled={isStarting}
       >
         {isStarting ? 'INICIANDO...' : 'INICIAR OPERAÇÃO'}
       </Button>

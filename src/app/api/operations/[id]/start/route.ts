@@ -20,13 +20,6 @@ export async function POST(_request: Request, context: RouteContext) {
   if (operation.creator_id !== user.id) return NextResponse.json({ error: 'Apenas o criador pode iniciar.' }, { status: 403 })
   if (operation.status !== 'inactive') return NextResponse.json({ error: 'Operacao ja iniciada.' }, { status: 400 })
 
-  const { count } = await supabase
-    .from('operation_members')
-    .select('*', { count: 'exact', head: true })
-    .eq('operation_id', operationId)
-
-  if ((count || 0) < 3) return NextResponse.json({ error: 'Minimo de 3 agentes necessario.' }, { status: 400 })
-
   const now = new Date()
   const endsAt = new Date(now)
   endsAt.setDate(endsAt.getDate() + operation.duration_days)

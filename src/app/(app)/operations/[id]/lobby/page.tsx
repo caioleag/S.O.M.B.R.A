@@ -7,6 +7,7 @@ import { TopBar } from '@/components/layout/TopBar'
 import { MemberList } from '@/components/operations/MemberList'
 import { InviteCard } from '@/components/operations/InviteCard'
 import { StartOperationButton } from './StartOperationButton'
+import { CancelOperationButton } from './CancelOperationButton'
 import { LobbyRealtimeSync } from './LobbyRealtimeSync'
 
 export const dynamic = 'force-dynamic'
@@ -52,7 +53,6 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
 
   const isCreator = operation.creator_id === user.id
   const memberCount = members?.length || 0
-  const canStart = isCreator && memberCount >= 3
 
   return (
     <>
@@ -95,10 +95,8 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
 
         {isCreator ? (
           <div className="space-y-2">
-            <StartOperationButton operationId={operationId} canStart={canStart} memberCount={memberCount} />
-            {!canStart && memberCount < 3 ? (
-              <p className="text-center font-['Inter'] text-xs text-[#3a3632]">Minimo de 3 agentes necessario.</p>
-            ) : null}
+            <StartOperationButton operationId={operationId} />
+            <CancelOperationButton operationId={operationId} />
           </div>
         ) : (
           <div className="text-center py-4">
