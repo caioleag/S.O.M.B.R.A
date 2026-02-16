@@ -52,7 +52,12 @@ export function FeedWrapper({ operationId, userId }: Props) {
     const { data, error } = await supabase
       .from('assigned_missions')
       .select(
-        'id, operation_id, user_id, status, photo_url, caption, submitted_at, missions(title,category,difficulty), profiles(id,username,avatar_url), votes(voter_id,vote), reactions(user_id,reaction_type), favorite_photos(user_id)'
+        `id, operation_id, user_id, status, photo_url, caption, submitted_at,
+         missions!assigned_missions_mission_id_fkey(title,category,difficulty),
+         profiles!assigned_missions_user_id_fkey(id,username,avatar_url),
+         votes!votes_assigned_mission_id_fkey(voter_id,vote),
+         reactions!reactions_assigned_mission_id_fkey(user_id,reaction_type),
+         favorite_photos!favorite_photos_assigned_mission_id_fkey(user_id)`
       )
       .eq('operation_id', operationId)
       .in('status', ['completed', 'rejected'])
@@ -60,7 +65,12 @@ export function FeedWrapper({ operationId, userId }: Props) {
 
     console.log('[FEED DEBUG] Filtered query result:', { 
       data, 
-      error, 
+      error: error ? {
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        code: error.code
+      } : null,
       count: data?.length,
       statuses: data?.map(d => d.status),
       firstItem: data?.[0]
