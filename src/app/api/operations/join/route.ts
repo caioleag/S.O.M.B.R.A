@@ -1,63 +1,48 @@
-﻿import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+
+function mapJoinError(message: string) {
+  if (message.includes('OP_NOT_FOUND')) {
+    return { status: 404, error: 'Codigo invalido ou operacao nao encontrada.' }
+  }
+  if (message.includes('OP_COMPLETED')) {
+    return { status: 400, error: 'Operacao ja encerrada.' }
+  }
+  if (message.includes('ALREADY_IN_ACTIVE_OPERATION')) {
+    return { status: 400, error: 'Voce ja participa de uma operacao ativa.' }
+  }
+  if (message.includes('OP_FULL')) {
+    return { status: 400, error: 'OPERACAO COMPLETA - LIMITE DE AGENTES ATINGIDO' }
+  }
+  return null
+}
 
 export async function POST(request: Request) {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const payload = await request.json()
-  const code = String(payload.code || payload.invite_code || '').trim().toUpperCase()
+  const code = String(payload.code || payload.invite_code || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, '')
 
   if (!code) return NextResponse.json({ error: 'Codigo e obrigatorio.' }, { status: 400 })
 
-  const { data: operation } = await supabase.from('operations').select('*').eq('invite_code', code).maybeSingle()
-
-  if (!operation) return NextResponse.json({ error: 'Codigo invalido ou operacao nao encontrada.' }, { status: 404 })
-  if (operation.status === 'completed') return NextResponse.json({ error: 'Operacao ja encerrada.' }, { status: 400 })
-
-  const { data: activeMembership } = await supabase
-    .from('operation_members')
-    .select('operation_id, operations!inner(status)')
-    .eq('user_id', user.id)
-    .in('operations.status', ['inactive', 'active'])
-    .neq('operation_id', operation.id)
-    .limit(1)
-
-  if ((activeMembership || []).length > 0) {
-    return NextResponse.json({ error: 'Voce ja participa de uma operacao ativa.' }, { status: 400 })
-  }
-
-  const { count } = await supabase
-    .from('operation_members')
-    .select('*', { count: 'exact', head: true })
-    .eq('operation_id', operation.id)
-
-  if ((count || 0) >= 5) {
-    return NextResponse.json({ error: 'OPERACAO COMPLETA - LIMITE DE AGENTES ATINGIDO' }, { status: 400 })
-  }
-
-  const { data: existing } = await supabase
-    .from('operation_members')
-    .select('*')
-    .eq('operation_id', operation.id)
-    .eq('user_id', user.id)
-    .maybeSingle()
-
-  if (existing) {
-    return NextResponse.json({ operation_id: operation.id })
-  }
-
-  const { error } = await supabase.from('operation_members').insert({
-    operation_id: operation.id,
-    user_id: user.id,
-    role: 'member',
+  const { data: operationId, error } = await supabase.rpc('join_operation_by_code', {
+    p_code: code,
+    p_user_id: user.id,
   })
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  if (error) {
+    const mapped = mapJoinError(error.message || '')
+    if (mapped) return NextResponse.json({ error: mapped.error }, { status: mapped.status })
+    return NextResponse.json({ error: error.message }, { status: 500 })
+  }
 
-  return NextResponse.json({ operation_id: operation.id })
+  return NextResponse.json({ operation_id: operationId })
 }
-
