@@ -132,14 +132,16 @@ export function BottomNav() {
                   >
                     {/* Active signal line */}
                     {active && (
-                      <span className="absolute inset-x-0 top-0 h-[2px] bg-gold" />
+                      <span className="absolute inset-x-0 top-0 h-[2px] bg-gold animate-nav-line-glow" />
                     )}
 
                     <Icon
                       size={16}
                       strokeWidth={active ? 1.5 : 1.3}
-                      className={`transition-colors duration-150 ${
-                        active ? 'text-gold' : 'text-ink-faint group-hover:text-ink-muted'
+                      className={`transition-all duration-150 ${
+                        active
+                          ? 'text-gold drop-shadow-[0_0_6px_rgba(201,162,39,0.55)]'
+                          : 'text-ink-faint group-hover:text-ink-muted'
                       }`}
                     />
 
@@ -166,14 +168,16 @@ export function BottomNav() {
                       className="relative flex flex-col items-center justify-center gap-1.5 py-3.5 group"
                     >
                       {active && (
-                        <span className="absolute inset-x-0 top-0 h-[2px] bg-gold" />
+                        <span className="absolute inset-x-0 top-0 h-[2px] bg-gold animate-nav-line-glow" />
                       )}
 
                       <Icon
                         size={16}
                         strokeWidth={active ? 1.5 : 1.3}
-                        className={`transition-colors duration-150 ${
-                          active ? 'text-gold' : 'text-ink-faint group-hover:text-ink-muted'
+                        className={`transition-all duration-150 ${
+                          active
+                            ? 'text-gold drop-shadow-[0_0_6px_rgba(201,162,39,0.55)]'
+                            : 'text-ink-faint group-hover:text-ink-muted'
                         }`}
                       />
 

@@ -14,7 +14,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ variant = 'primary', fullWidth, loading, disabled, children, className = '', ...props }, ref) => {
     const base = 'font-spy uppercase tracking-wider text-sm px-6 py-3 transition-colors duration-150 rounded-sm disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none'
     const variants: Record<ButtonVariant, string> = {
-      primary: 'bg-gold text-base',
+      primary: 'bg-gold text-base animate-btn-breathe',
       secondary: 'bg-transparent border border-border text-ink hover:border-gold',
       danger: 'bg-transparent border border-red-dark text-[#c94040]',
     }

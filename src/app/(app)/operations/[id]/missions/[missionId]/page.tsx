@@ -12,6 +12,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import type { AssignedMission, Mission } from '@/lib/supabase/types'
 import { playSfx } from '@/lib/sfx'
+import { Typewriter } from '@/components/ui/Typewriter'
 
 interface Props {
   params: { id: string; missionId: string }
@@ -111,8 +112,13 @@ export default function ActiveMissionPage({ params }: Props) {
 
         {/* Mission header */}
         <div>
-          <p className="font-spy text-ink-muted text-xs uppercase tracking-wider mb-1">SUA MISSÃO</p>
-          <h1 className="font-spy text-ink text-xl leading-snug">{mission.title}</h1>
+          <p className="font-spy text-ink-muted text-xs uppercase tracking-wider mb-1">SUA MISSAO</p>
+          <Typewriter
+            text={mission.title}
+            speed={22}
+            as="h1"
+            className="font-spy text-ink text-xl leading-snug block animate-gold-glow"
+          />
         </div>
 
         <div className="border-t border-[#1a1a1a]" />
@@ -120,7 +126,13 @@ export default function ActiveMissionPage({ params }: Props) {
         {/* Objective */}
         <div>
           <p className="font-spy text-ink-muted text-[10px] uppercase tracking-wider mb-2">OBJETIVO</p>
-          <p className="text-ink text-sm leading-relaxed">{mission.objective}</p>
+          <Typewriter
+            text={mission.objective}
+            speed={12}
+            delay={mission.title.length * 22 + 120}
+            as="p"
+            className="text-ink text-sm leading-relaxed block"
+          />
         </div>
 
         {/* Difficulty + Points */}

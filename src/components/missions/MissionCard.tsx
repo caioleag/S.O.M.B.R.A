@@ -3,6 +3,7 @@
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
 import { DifficultyBadge } from '@/components/ui/DifficultyBadge'
+import { Typewriter } from '@/components/ui/Typewriter'
 
 const CATEGORY_COLORS = {
   infiltracao: { bg: '#0d1a26', text: '#4a7ab5', border: '#1e3a52' },
@@ -45,7 +46,12 @@ export function MissionCard({ mission, isSelected = false, onAccept, disabled = 
         </div>
       </div>
 
-      <h3 className="font-['Special_Elite'] text-base text-[#e8e4d9] mb-2 leading-tight">{mission.title}</h3>
+      <Typewriter
+        text={mission.title}
+        speed={16}
+        as="h3"
+        className="font-['Special_Elite'] text-base text-[#e8e4d9] mb-2 leading-tight block"
+      />
 
       <p className="font-['Inter'] text-[13px] text-[#6b6660] mb-4 line-clamp-3 leading-relaxed">{mission.objective}</p>
 

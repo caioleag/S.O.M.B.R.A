@@ -168,37 +168,40 @@ input::placeholder, textarea::placeholder {
   border-color: #1a1a1a;
 }
 
-/* Page transition — CRT power-on effect */
-@keyframes page-enter {
-  0% {
-    opacity: 0;
-    transform: translateY(4px);
-    filter: brightness(0.05);
-  }
-  35% {
-    filter: brightness(0.5);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-    filter: brightness(1);
-  }
-}
+/* ── Ambient animations ─────────────────────────────────── */
 
-/* Screen flash on route change */
-@keyframes screen-flash {
-  0%   { opacity: 0.8; }
-  40%  { opacity: 0.4; }
-  100% { opacity: 0;   }
+/* Primary button: gold breathing glow */
+@keyframes btn-breathe {
+  0%, 100% { box-shadow: 0 0 0 1px rgba(201,162,39,0.12), 0 0 14px rgba(201,162,39,0.06); }
+  50%       { box-shadow: 0 0 0 1px rgba(201,162,39,0.30), 0 0 26px rgba(201,162,39,0.16); }
+}
+.animate-btn-breathe { animation: btn-breathe 3.5s ease-in-out infinite; }
+
+/* Gold text glow pulse */
+@keyframes gold-glow {
+  0%, 100% { text-shadow: 0 0 8px rgba(201,162,39,0.18); }
+  50%       { text-shadow: 0 0 20px rgba(201,162,39,0.50); }
+}
+.animate-gold-glow { animation: gold-glow 3s ease-in-out infinite; }
+
+/* Nav active line glow */
+@keyframes nav-line-glow {
+  0%, 100% { box-shadow: 0 0 5px rgba(201,162,39,0.35); }
+  50%       { box-shadow: 0 0 12px rgba(201,162,39,0.70); }
+}
+.animate-nav-line-glow { animation: nav-line-glow 2.5s ease-in-out infinite; }
+
+/* Typewriter cursor blink (already have 'blink' keyframe above) */
+.tw-cursor {
+  display: inline-block;
+  width: 0.55ch;
+  animation: blink 0.65s step-end infinite;
+  color: #c9a227;
+  font-weight: 400;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  @keyframes page-enter {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-  @keyframes screen-flash {
-    from { opacity: 0.3; }
-    to   { opacity: 0;   }
-  }
+  .animate-btn-breathe,
+  .animate-gold-glow,
+  .animate-nav-line-glow { animation: none; }
 }

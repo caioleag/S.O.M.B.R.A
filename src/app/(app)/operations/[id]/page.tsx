@@ -62,6 +62,7 @@ export default async function OperationPage({ params, searchParams }: OperationP
             <ArrowLeft size={16} strokeWidth={1.5} />
           </Link>
         }
+        glow
         title={operation.name}
         right={
           <div className="flex items-center gap-3">

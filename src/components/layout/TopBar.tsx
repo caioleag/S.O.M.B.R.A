@@ -3,14 +3,15 @@ interface TopBarProps {
   subtitle?: React.ReactNode
   right?: React.ReactNode
   left?: React.ReactNode
+  glow?: boolean
 }
 
-export function TopBar({ title = 'S.O.M.B.R.A', subtitle, right, left }: TopBarProps) {
+export function TopBar({ title = 'S.O.M.B.R.A', subtitle, right, left, glow }: TopBarProps) {
   return (
     <header className="sticky top-0 z-20 h-12 bg-[#0c0a07] border-b border-[#1e1a12] flex items-center px-3 justify-between">
       <div className="flex items-center gap-1.5 min-w-0">
         {left}
-        <span className="font-spy text-ink tracking-wider text-sm truncate leading-none">
+        <span className={`font-spy text-ink tracking-wider text-sm truncate leading-none${glow ? ' animate-gold-glow' : ''}`}>
           {title}
         </span>
       </div>
