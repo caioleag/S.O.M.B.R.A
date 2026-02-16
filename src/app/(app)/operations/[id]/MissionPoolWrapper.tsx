@@ -65,6 +65,11 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
     [assigned]
   )
 
+  const completedMission = useMemo(
+    () => assigned.find((item) => item.status === 'completed'),
+    [assigned]
+  )
+
   const missionsWithStatus = useMemo(
     () =>
       missions.map((mission) => {
@@ -115,7 +120,19 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
 
   return (
     <div>
-      {selectedAssignedMission ? (
+      {completedMission ? (
+        <div className="px-4 pt-4 pb-4">
+          <button
+            onClick={() => router.push(`/operations/${operationId}/missions/${completedMission.id}`)}
+            className="w-full font-['Special_Elite'] text-xs uppercase tracking-wider border border-[#4a8c4a] bg-[#0f0e0a] text-[#4a8c4a] py-3 rounded-sm"
+          >
+            ✓ MISSAO DO DIA CONCLUIDA - VER DETALHES
+          </button>
+          <p className="text-center text-[#6b6660] font-['Inter'] text-xs mt-3">
+            Aguarde a proxima virada para novas missoes
+          </p>
+        </div>
+      ) : selectedAssignedMission ? (
         <div className="px-4 pt-4">
           <button
             onClick={() => router.push(`/operations/${operationId}/missions/${selectedAssignedMission.id}`)}
@@ -123,12 +140,14 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
           >
             CONTINUAR MISSAO EM ANDAMENTO
           </button>
-        </div>
-      ) : null}
-
-      {error ? (
-        <div className="px-4 pt-4">
-          <div className="border border-[#8b1a1a] bg-[#1f0d0d] rounded-sm p-3">
+      {!completedMission && (
+        <MissionPool
+          missions={missionsWithStatus}
+          selectedMissionId={selectedAssignedMission?.mission_id}
+          onSelectMission={handleSelectMission}
+          resetHour={resetHour}
+        />
+      )}  <div className="border border-[#8b1a1a] bg-[#1f0d0d] rounded-sm p-3">
             <p className="font-['Special_Elite'] text-[11px] text-[#c94040] uppercase tracking-wider">TRANSMISSAO INTERROMPIDA</p>
             <p className="font-['Inter'] text-xs text-[#e8e4d9] mt-1">{error}</p>
           </div>

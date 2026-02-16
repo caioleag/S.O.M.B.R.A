@@ -35,6 +35,17 @@ export async function POST(_request: Request, context: RouteContext) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
+  // Cria o pool de missões para o dia 1
+  const { error: poolError } = await supabase.rpc('ensure_daily_mission_pool', {
+    p_operation_id: operationId,
+    p_day_number: 1
+  })
+
+  if (poolError) {
+    console.error('Erro ao criar pool de missões:', poolError)
+    // Não retorna erro para não bloquear o início da operação
+  }
+
   return NextResponse.json({ success: true })
 }
 
