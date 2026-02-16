@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Inter, Special_Elite } from "next/font/google";
 import "./globals.css";
 import { Soundscape } from "@/components/layout/Soundscape";
+import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -52,6 +53,15 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" className={`${inter.variable} ${specialElite.variable}`}>
       <body className="antialiased bg-[#0a0a0a] min-h-screen">
+        <NextTopLoader
+          color="#c9a227"
+          height={2}
+          shadow={false}
+          showSpinner={false}
+          easing="ease"
+          speed={200}
+          crawlSpeed={200}
+        />
         <Soundscape />
         {children}
       </body>
