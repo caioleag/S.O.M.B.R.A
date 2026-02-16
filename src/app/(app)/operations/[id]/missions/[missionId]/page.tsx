@@ -104,9 +104,22 @@ export default function ActiveMissionPage({ params }: Props) {
     form.append('photo', photo)
     if (caption) form.append('caption', caption)
 
+    console.log('[SUBMIT DEBUG] Submitting mission:', {
+      assignedId: assigned.id,
+      operationId: resolvedParams.id,
+      hasPhoto: !!photo,
+      caption
+    })
+
     const res = await fetch(`/api/operations/${resolvedParams.id}/missions/submit`, {
       method: 'POST',
       body: form,
+    })
+
+    console.log('[SUBMIT DEBUG] Response:', {
+      ok: res.ok,
+      status: res.status,
+      data: await res.clone().json().catch(() => null)
     })
 
     if (res.ok) {

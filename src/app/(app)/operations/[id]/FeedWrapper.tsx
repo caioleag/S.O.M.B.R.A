@@ -38,16 +38,33 @@ export function FeedWrapper({ operationId, userId }: Props) {
 
   const fetchFeed = useCallback(async () => {
     const supabase = createClient()
+    
+    console.log('[FEED DEBUG] Fetching for operation:', operationId)
+    
+    // Primeiro, teste simples sem filtro de status
+    const { data: allData, error: allError } = await supabase
+      .from('assigned_missions')
+      .select('id, status, submitted_at, photo_url')
+      .eq('operation_id', operationId)
+    
+    console.log('[FEED DEBUG] ALL assigned missions:', allData)
+    
     const { data, error } = await supabase
       .from('assigned_missions')
       .select(
-        'id, operation_id, user_id, status, photo_url, caption, missions(title,category,difficulty), profiles(id,username,avatar_url), votes(voter_id,vote), reactions(user_id,reaction_type), favorite_photos(user_id)'
+        'id, operation_id, user_id, status, photo_url, caption, submitted_at, missions(title,category,difficulty), profiles(id,username,avatar_url), votes(voter_id,vote), reactions(user_id,reaction_type), favorite_photos(user_id)'
       )
       .eq('operation_id', operationId)
       .in('status', ['completed', 'rejected'])
       .order('submitted_at', { ascending: false })
 
-    console.log('[FEED DEBUG] Query result:', { data, error, count: data?.length })
+    console.log('[FEED DEBUG] Filtered query result:', { 
+      data, 
+      error, 
+      count: data?.length,
+      statuses: data?.map(d => d.status),
+      firstItem: data?.[0]
+    })
 
     const normalized = ((data || []) as unknown as FeedItem[]).map((item) => ({
       ...item,
@@ -55,7 +72,7 @@ export function FeedWrapper({ operationId, userId }: Props) {
       profiles: Array.isArray(item.profiles) ? item.profiles[0] || null : item.profiles || null,
     }))
 
-    console.log('[FEED DEBUG] Normalized items:', normalized.length)
+    console.log('[FEED DEBUG] Normalized items:', normalized.length, normalized)
     setItems(normalized)
     setLoading(false)
   }, [operationId])
