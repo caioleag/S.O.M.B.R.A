@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { TopBar } from '@/components/layout/TopBar';
@@ -60,7 +62,18 @@ export default function JoinOperationPage() {
 
   return (
     <>
-      <TopBar title="INFILTRAÇÃO" />
+      <TopBar
+        left={
+          <Link
+            href="/operations"
+            aria-label="Voltar"
+            className="flex items-center justify-center -ml-1 mr-1 p-1 text-[#6b6660] hover:text-[#c9a227] transition-colors"
+          >
+            <ArrowLeft size={16} strokeWidth={1.5} />
+          </Link>
+        }
+        title="INFILTRACAO"
+      />
 
       <div className="min-h-[calc(100vh-48px-56px)] flex items-center justify-center p-4">
         <Card className="w-full max-w-md">

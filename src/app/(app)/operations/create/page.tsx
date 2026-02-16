@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { TopBar } from '@/components/layout/TopBar';
@@ -59,7 +61,18 @@ export default function CreateOperationPage() {
 
   return (
     <>
-      <TopBar title="NOVA OPERAÇÃO" />
+      <TopBar
+        left={
+          <Link
+            href="/operations"
+            aria-label="Voltar"
+            className="flex items-center justify-center -ml-1 mr-1 p-1 text-[#6b6660] hover:text-[#c9a227] transition-colors"
+          >
+            <ArrowLeft size={16} strokeWidth={1.5} />
+          </Link>
+        }
+        title="NOVA OPERACAO"
+      />
 
       <div className="p-4">
         <Card className="max-w-md mx-auto">
