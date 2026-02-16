@@ -6,11 +6,11 @@ import { Eye, Package, UserCircle, Shirt, MapPin } from 'lucide-react'
 import { playSfx } from '@/lib/sfx'
 
 const CATEGORIES = [
-  { id: 'vigilancia', name: 'VIGILÂNCIA', color: '#8b5cf6', icon: Eye },
-  { id: 'coleta', name: 'COLETA DE PROVAS', color: '#3b82f6', icon: Package },
-  { id: 'infiltra cao', name: 'INFILTRAÇÃO', color: '#10b981', icon: UserCircle },
-  { id: 'disfarce', name: 'DISFARCE', color: '#f59e0b', icon: Shirt },
-  { id: 'reconhecimento', name: 'RECONHECIMENTO', color: '#ef4444', icon: MapPin },
+  { id: 'vigilancia', name: 'VIGILÂNCIA', color: '#4a8c4a', icon: Eye },
+  { id: 'coleta', name: 'COLETA DE PROVAS', color: '#c94040', icon: Package },
+  { id: 'infiltracao', name: 'INFILTRAÇÃO', color: '#4a7ab5', icon: UserCircle },
+  { id: 'disfarce', name: 'DISFARCE', color: '#8a5abf', icon: Shirt },
+  { id: 'reconhecimento', name: 'RECONHECIMENTO', color: '#c9a227', icon: MapPin },
 ]
 
 interface CategoryRouletteProps {
@@ -22,6 +22,7 @@ export function CategoryRoulette({ onComplete, selectedCategory }: CategoryRoule
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isSpinning, setIsSpinning] = useState(false)
   const [finalCategory, setFinalCategory] = useState<string | null>(null)
+  const [isConfirming, setIsConfirming] = useState(false)
 
   useEffect(() => {
     if (selectedCategory && !isSpinning && !finalCategory) {
@@ -57,7 +58,8 @@ export function CategoryRoulette({ onComplete, selectedCategory }: CategoryRoule
   }
 
   const handleConfirm = () => {
-    if (finalCategory) {
+    if (finalCategory && !isConfirming) {
+      setIsConfirming(true)
       playSfx('mission', 0.3)
       onComplete(finalCategory)
     }
@@ -107,9 +109,10 @@ export function CategoryRoulette({ onComplete, selectedCategory }: CategoryRoule
 
             <button
               onClick={handleConfirm}
-              className="w-full font-['Special_Elite'] text-sm uppercase tracking-wider bg-[#c9a227] text-[#0a0a0a] py-3 rounded-sm hover:bg-[#d4ad2f] transition-colors"
+              disabled={isConfirming}
+              className="w-full font-['Special_Elite'] text-sm uppercase tracking-wider bg-[#c9a227] text-[#0a0a0a] py-3 rounded-sm hover:bg-[#d4ad2f] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              SELECIONAR MISSÃO
+              {isConfirming ? 'CARREGANDO...' : 'SELECIONAR MISSÃO'}
             </button>
           </div>
         </motion.div>

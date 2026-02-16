@@ -18,11 +18,12 @@ interface MissionPoolProps {
   selectedMissionId?: string
   onSelectMission: (missionId: string) => void
   resetHour: number
+  isSelecting?: boolean
 }
 
 type DifficultyFilter = 'all' | 'easy' | 'medium' | 'hard'
 
-export function MissionPool({ missions, selectedMissionId, onSelectMission, resetHour }: MissionPoolProps) {
+export function MissionPool({ missions, selectedMissionId, onSelectMission, resetHour, isSelecting = false }: MissionPoolProps) {
   const [filter, setFilter] = useState<DifficultyFilter>('all')
   const [timeLeft, setTimeLeft] = useState('')
 
@@ -113,7 +114,7 @@ export function MissionPool({ missions, selectedMissionId, onSelectMission, rese
               mission={mission}
               isSelected={mission.id === selectedMissionId}
               onAccept={onSelectMission}
-              disabled={Boolean(selectedMissionId && selectedMissionId !== mission.id)}
+              disabled={isSelecting || Boolean(selectedMissionId && selectedMissionId !== mission.id)}
             />
           ))
         )}

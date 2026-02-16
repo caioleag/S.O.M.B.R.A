@@ -38,6 +38,7 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
   const [category, setCategory] = useState<string | null>(null)
   const [showRoulette, setShowRoulette] = useState(false)
   const [rouletteComplete, setRouletteComplete] = useState(false)
+  const [isSelecting, setIsSelecting] = useState(false)
 
   const fetchMissions = useCallback(async () => {
     const response = await fetch(`/api/operations/${operationId}/missions`, {
@@ -99,6 +100,9 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
   )
 
   const handleSelectMission = async (missionId: string) => {
+    if (isSelecting) return
+    
+    setIsSelecting(true)
     try {
       const response = await fetch(`/api/operations/${operationId}/missions/select`, {
         method: 'POST',
@@ -116,6 +120,7 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
     } catch (err) {
       playSfx('error', 0.3)
       setError(err instanceof Error ? err.message : 'Falha ao selecionar missao.')
+      setIsSelecting(false)
     }
   }
 
@@ -195,7 +200,7 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
       {/* Botão Receber Missão */}
       {shouldShowReceiveButton && !showRoulette && (
         <div className="px-4 pt-4 pb-6">
-          <Button fullWidth onClick={handleReceiveMission}>
+          <Button fullWidth onClick={handleReceiveMission} disabled={isSelecting}>
             RECEBER MISSAO
           </Button>
         </div>
@@ -208,6 +213,7 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
           selectedMissionId={undefined}
           onSelectMission={handleSelectMission}
           resetHour={resetHour}
+          isSelecting={isSelecting}
         />
       )}
     </div>
