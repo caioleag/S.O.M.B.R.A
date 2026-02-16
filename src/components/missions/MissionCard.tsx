@@ -44,12 +44,12 @@ export function MissionCard({ mission, isSelected = false, onAccept, disabled = 
   return (
     <Card className={`border-l-4 ${isSelected ? 'border-[#3d3520] bg-[#0f0e0a]' : ''}`}>
       {/* Ícone grande da categoria */}
-      <div className="flex justify-center mb-4 mt-2">
-        <Icon size={56} style={{ color: colors.text, opacity: 0.75 }} strokeWidth={1.5} />
+      <div className="flex justify-center mb-6 mt-3">
+        <Icon size={64} style={{ color: colors.text, opacity: 0.85 }} strokeWidth={1.5} />
       </div>
 
-      <div className="flex items-start justify-between mb-3">
-        <span className="text-[10px] font-['Special_Elite'] uppercase tracking-wider" style={{ color: colors.text }}>
+      <div className="flex items-start justify-between mb-4">
+        <span className="text-[11px] font-['Special_Elite'] uppercase tracking-wider" style={{ color: colors.text }}>
           {mission.category}
         </span>
         <div className="flex items-center gap-2">
@@ -65,10 +65,10 @@ export function MissionCard({ mission, isSelected = false, onAccept, disabled = 
         text={mission.title}
         speed={16}
         as="h3"
-        className="font-['Special_Elite'] text-base text-[#e8e4d9] mb-2 leading-tight block"
+        className="font-['Special_Elite'] text-lg text-[#e8e4d9] mb-3 leading-tight block"
       />
 
-      <p className="font-['Inter'] text-[13px] text-[#6b6660] mb-4 line-clamp-3 leading-relaxed">{mission.objective}</p>
+      <p className="font-['Inter'] text-[14px] text-[#a39d91] mb-5 line-clamp-2 leading-relaxed">{mission.objective}</p>
 
       {!isSelected && onAccept ? (
         <div className="flex justify-end">

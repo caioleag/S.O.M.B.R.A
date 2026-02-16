@@ -23,7 +23,7 @@ const CATEGORY_ICONS = {
 } as const
 
 interface Props {
-  params: { id: string; missionId: string }
+  params: Promise<{ id: string; missionId: string }>
 }
 
 export default function ActiveMissionPage({ params }: Props) {
@@ -34,15 +34,21 @@ export default function ActiveMissionPage({ params }: Props) {
   const [caption, setCaption] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
+  const [resolvedParams, setResolvedParams] = useState<{ id: string; missionId: string } | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   useEffect(() => {
+    params.then(setResolvedParams)
+  }, [params])
+
+  useEffect(() => {
+    if (!resolvedParams) return
     const supabase = createClient()
     supabase
       .from('assigned_missions')
       .select('*, missions(*)')
-      .eq('id', params.missionId)
+      .eq('id', resolvedParams.missionId)
       .single()
       .then(({ data }) => {
         if (data) {
@@ -51,7 +57,7 @@ export default function ActiveMissionPage({ params }: Props) {
         }
         setFetching(false)
       })
-  }, [params.missionId])
+  }, [resolvedParams])
 
   async function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -70,7 +76,7 @@ export default function ActiveMissionPage({ params }: Props) {
   }
 
   async function handleSubmit() {
-    if (!photo || !assigned) return
+    if (!photo || !assigned || !resolvedParams) return
     setLoading(true)
 
     const form = new FormData()
@@ -78,24 +84,24 @@ export default function ActiveMissionPage({ params }: Props) {
     form.append('photo', photo)
     if (caption) form.append('caption', caption)
 
-    const res = await fetch(`/api/operations/${params.id}/missions/submit`, {
+    const res = await fetch(`/api/operations/${resolvedParams.id}/missions/submit`, {
       method: 'POST',
       body: form,
     })
 
     if (res.ok) {
       playSfx('submit', 0.32)
-      router.push(`/operations/${params.id}`)
+      router.push(`/operations/${resolvedParams.id}`)
     } else {
       playSfx('error', 0.3)
       setLoading(false)
     }
   }
 
-  if (fetching || !mission || !assigned) {
+  if (fetching || !mission || !assigned || !resolvedParams) {
     return (
       <div className="min-h-screen bg-base">
-        <TopBar title="MISSÃO" left={<Link href={`/operations/${params.id}`}><ChevronLeft size={18} /></Link>} />
+        <TopBar title="MISSÃO" left={<ChevronLeft size={18} />} />
         <div className="p-4 space-y-3">
           {[1,2,3,4].map(i => <div key={i} className="redacted h-6 w-full rounded-sm" />)}
         </div>
@@ -111,7 +117,7 @@ export default function ActiveMissionPage({ params }: Props) {
     <div className="min-h-screen bg-base pb-20">
       <TopBar
         title="MISSÃO ATIVA"
-        left={<Link href={`/operations/${params.id}`}><ChevronLeft size={18} className="text-ink-muted" /></Link>}
+        left={<Link href={`/operations/${resolvedParams.id}`}><ChevronLeft size={18} className="text-ink-muted" /></Link>}
       />
 
       <div className="px-4 py-6 max-w-sm mx-auto space-y-5">
