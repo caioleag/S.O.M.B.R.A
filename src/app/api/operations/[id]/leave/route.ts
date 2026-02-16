@@ -5,9 +5,9 @@ interface RouteContext {
   params: Promise<{ id: string }>
 }
 
-// Creator cancels operation (lobby only) — updates status to 'cancelled'
-// so FK constraints are never hit and the op disappears from all hub queries
-export async function DELETE(_request: Request, context: RouteContext) {
+// Member leaves an operation — removes their row from operation_members
+// Creator cannot leave; they must cancel (DELETE /api/operations/[id])
+export async function POST(_request: Request, context: RouteContext) {
   const { id: operationId } = await context.params
 
   const supabase = await createClient()
@@ -23,13 +23,14 @@ export async function DELETE(_request: Request, context: RouteContext) {
     .single()
 
   if (!operation) return NextResponse.json({ error: 'Operacao nao encontrada.' }, { status: 404 })
-  if (operation.creator_id !== user.id) return NextResponse.json({ error: 'Apenas o criador pode encerrar.' }, { status: 403 })
-  if (operation.status !== 'inactive') return NextResponse.json({ error: 'Apenas operacoes no lobby podem ser encerradas.' }, { status: 400 })
+  if (operation.creator_id === user.id) return NextResponse.json({ error: 'O criador deve encerrar a operacao, nao sair.' }, { status: 400 })
+  if (operation.status !== 'inactive') return NextResponse.json({ error: 'Nao e possivel sair de uma operacao ativa.' }, { status: 400 })
 
   const { error } = await supabase
-    .from('operations')
-    .update({ status: 'cancelled' })
-    .eq('id', operationId)
+    .from('operation_members')
+    .delete()
+    .eq('operation_id', operationId)
+    .eq('user_id', user.id)
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 

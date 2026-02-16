@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { TopBar } from '@/components/layout/TopBar';
+import { Typewriter } from '@/components/ui/Typewriter';
 import { playSfx } from '@/lib/sfx';
 
 export default function JoinOperationPage() {
@@ -79,12 +80,8 @@ export default function JoinOperationPage() {
         <Card className="w-full max-w-md">
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="font-['Special_Elite'] text-lg text-[#e8e4d9] mb-2 tracking-wide">
-                CÓDIGO DE ACESSO
-              </h2>
-              <p className="font-['Inter'] text-sm text-[#6b6660]">
-                Insira o código fornecido pelo criador
-              </p>
+              <Typewriter text="CODIGO DE ACESSO" speed={25} delay={100} as="h2" className="font-['Special_Elite'] text-lg text-[#e8e4d9] mb-2 tracking-wide" />
+              <Typewriter text="Insira o codigo fornecido pelo criador" speed={18} delay={600} className="font-['Inter'] text-sm text-[#6b6660]" />
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">

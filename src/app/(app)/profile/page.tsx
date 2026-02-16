@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/Button'
 import { RankInsignia } from '@/components/rank/RankInsignia'
 import { PushSubscriptionCard } from '@/components/profile/PushSubscriptionCard'
 import { TopBar } from '@/components/layout/TopBar'
+import { Typewriter } from '@/components/ui/Typewriter'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -74,7 +75,7 @@ export default async function ProfilePage() {
 
   return (
     <>
-    <TopBar title="AGENTE" subtitle={profile.rank || 'RECRUTA'} />
+    <TopBar title="AGENTE" subtitle={<Typewriter text={profile.rank || 'RECRUTA'} speed={30} delay={200} />} />
     <div className="py-4 px-4">
       <div className="max-w-md mx-auto space-y-4">
         <Card>

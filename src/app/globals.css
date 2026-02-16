@@ -172,22 +172,22 @@ input::placeholder, textarea::placeholder {
 
 /* Primary button: gold breathing glow */
 @keyframes btn-breathe {
-  0%, 100% { box-shadow: 0 0 0 1px rgba(201,162,39,0.12), 0 0 14px rgba(201,162,39,0.06); }
-  50%       { box-shadow: 0 0 0 1px rgba(201,162,39,0.30), 0 0 26px rgba(201,162,39,0.16); }
+  0%, 100% { box-shadow: 0 0 0 1px rgba(201,162,39,0.22), 0 0 18px rgba(201,162,39,0.12); }
+  50%       { box-shadow: 0 0 0 1px rgba(201,162,39,0.55), 0 0 36px rgba(201,162,39,0.28); }
 }
 .animate-btn-breathe { animation: btn-breathe 3.5s ease-in-out infinite; }
 
 /* Gold text glow pulse */
 @keyframes gold-glow {
-  0%, 100% { text-shadow: 0 0 8px rgba(201,162,39,0.18); }
-  50%       { text-shadow: 0 0 20px rgba(201,162,39,0.50); }
+  0%, 100% { text-shadow: 0 0 10px rgba(201,162,39,0.35), 0 0 20px rgba(201,162,39,0.12); }
+  50%       { text-shadow: 0 0 18px rgba(201,162,39,0.70), 0 0 36px rgba(201,162,39,0.25); }
 }
 .animate-gold-glow { animation: gold-glow 3s ease-in-out infinite; }
 
 /* Nav active line glow */
 @keyframes nav-line-glow {
-  0%, 100% { box-shadow: 0 0 5px rgba(201,162,39,0.35); }
-  50%       { box-shadow: 0 0 12px rgba(201,162,39,0.70); }
+  0%, 100% { box-shadow: 0 0 6px rgba(201,162,39,0.55); }
+  50%       { box-shadow: 0 0 16px rgba(201,162,39,0.90); }
 }
 .animate-nav-line-glow { animation: nav-line-glow 2.5s ease-in-out infinite; }
 

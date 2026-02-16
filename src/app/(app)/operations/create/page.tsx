@@ -7,6 +7,7 @@ import { ArrowLeft } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { TopBar } from '@/components/layout/TopBar';
+import { Typewriter } from '@/components/ui/Typewriter';
 import { playSfx } from '@/lib/sfx';
 
 export default function CreateOperationPage() {
@@ -78,9 +79,7 @@ export default function CreateOperationPage() {
         <Card className="max-w-md mx-auto">
           <div className="space-y-6">
             <div>
-              <p className="font-['Inter'] text-sm text-[#6b6660] mb-4">
-                Configure a missão, agente.
-              </p>
+              <Typewriter text="Configure a missao, agente." speed={20} delay={150} className="block font-['Inter'] text-sm text-[#6b6660] mb-4" />
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-6">

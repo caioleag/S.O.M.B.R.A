@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { TopBar } from '@/components/layout/TopBar'
 import { Card } from '@/components/ui/Card'
 import { Button } from '@/components/ui/Button'
+import { LeaveOperationButton } from '@/components/operations/LeaveOperationButton'
+import { Typewriter } from '@/components/ui/Typewriter'
 
 type MembershipRow = {
   role: 'creator' | 'member'
@@ -51,7 +53,13 @@ export default async function OperationsHubPage() {
     <>
       <TopBar
         title="OPERACAO"
-        subtitle={hasActiveOperation ? 'PAINEL TATICO DISPONIVEL' : 'SELECIONE UMA ACAO PARA COMECAR'}
+        subtitle={
+          <Typewriter
+            text={hasActiveOperation ? 'PAINEL TATICO DISPONIVEL' : 'SELECIONE UMA ACAO PARA COMECAR'}
+            speed={28}
+            delay={120}
+          />
+        }
       />
 
       <div className="space-y-4 p-4">
@@ -84,6 +92,10 @@ export default async function OperationsHubPage() {
                     {isCreator ? 'GERENCIAR LOBBY E CONVITES' : 'VER LOBBY DA OPERACAO'}
                   </Button>
                 </Link>
+
+                {!isCreator && operation.status === 'inactive' && (
+                  <LeaveOperationButton operationId={operation.id} />
+                )}
               </>
             ) : (
               <p className="font-['Inter'] text-sm text-[#6b6660]">

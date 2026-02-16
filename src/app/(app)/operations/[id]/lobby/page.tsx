@@ -8,7 +8,9 @@ import { MemberList } from '@/components/operations/MemberList'
 import { InviteCard } from '@/components/operations/InviteCard'
 import { StartOperationButton } from './StartOperationButton'
 import { CancelOperationButton } from './CancelOperationButton'
+import { LeaveOperationButton } from '@/components/operations/LeaveOperationButton'
 import { LobbyRealtimeSync } from './LobbyRealtimeSync'
+import { Typewriter } from '@/components/ui/Typewriter'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -99,8 +101,11 @@ export default async function LobbyPage({ params }: LobbyPageProps) {
             <CancelOperationButton operationId={operationId} />
           </div>
         ) : (
-          <div className="text-center py-4">
-            <p className="font-['Inter'] text-sm text-[#6b6660]">Aguardando o criador iniciar a operacao...</p>
+          <div className="space-y-2">
+            <div className="text-center py-2">
+              <Typewriter text="Aguardando o criador iniciar a operacao..." speed={22} delay={300} className="font-['Inter'] text-sm text-[#6b6660]" />
+            </div>
+            <LeaveOperationButton operationId={operationId} />
           </div>
         )}
       </div>
