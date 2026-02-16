@@ -38,7 +38,7 @@ export function FeedWrapper({ operationId, userId }: Props) {
 
   const fetchFeed = useCallback(async () => {
     const supabase = createClient()
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('assigned_missions')
       .select(
         'id, operation_id, user_id, status, photo_url, caption, missions(title,category,difficulty), profiles(id,username,avatar_url), votes(voter_id,vote), reactions(user_id,reaction_type), favorite_photos(user_id)'
@@ -47,12 +47,15 @@ export function FeedWrapper({ operationId, userId }: Props) {
       .in('status', ['completed', 'rejected'])
       .order('submitted_at', { ascending: false })
 
+    console.log('[FEED DEBUG] Query result:', { data, error, count: data?.length })
+
     const normalized = ((data || []) as unknown as FeedItem[]).map((item) => ({
       ...item,
       missions: Array.isArray(item.missions) ? item.missions[0] || null : item.missions || null,
       profiles: Array.isArray(item.profiles) ? item.profiles[0] || null : item.profiles || null,
     }))
 
+    console.log('[FEED DEBUG] Normalized items:', normalized.length)
     setItems(normalized)
     setLoading(false)
   }, [operationId])

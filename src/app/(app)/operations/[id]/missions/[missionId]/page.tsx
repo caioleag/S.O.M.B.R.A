@@ -111,7 +111,7 @@ export default function ActiveMissionPage({ params }: Props) {
 
     if (res.ok) {
       playSfx('submit', 0.32)
-      router.push(`/operations/${resolvedParams.id}`)
+      router.push(`/operations/${resolvedParams.id}?tab=feed`)
     } else {
       playSfx('error', 0.3)
       setLoading(false)
