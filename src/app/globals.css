@@ -167,3 +167,38 @@ input::placeholder, textarea::placeholder {
 .sep {
   border-color: #1a1a1a;
 }
+
+/* Page transition — CRT power-on effect */
+@keyframes page-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(4px);
+    filter: brightness(0.05);
+  }
+  35% {
+    filter: brightness(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: brightness(1);
+  }
+}
+
+/* Screen flash on route change */
+@keyframes screen-flash {
+  0%   { opacity: 0.8; }
+  40%  { opacity: 0.4; }
+  100% { opacity: 0;   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @keyframes page-enter {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes screen-flash {
+    from { opacity: 0.3; }
+    to   { opacity: 0;   }
+  }
+}

@@ -8,6 +8,7 @@ export type SfxName =
   | 'undo'
   | 'secret'
   | 'morse'
+  | 'nav-morse'
 
 const SFX_SRC: Record<SfxName, string> = {
   click: '/audio/ui-click.wav',
@@ -19,6 +20,7 @@ const SFX_SRC: Record<SfxName, string> = {
   undo: '/audio/undo.wav',
   secret: '/audio/secret.mp3',
   morse: '/audio/morse-signomas.wav',
+  'nav-morse': '/audio/morsert.wav',
 }
 
 const baseAudio = new Map<SfxName, HTMLAudioElement>()
