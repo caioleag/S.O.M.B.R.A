@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { MissionPool } from '@/components/missions/MissionPool'
+import { CategoryRoulette } from '@/components/missions/CategoryRoulette'
 import { playSfx } from '@/lib/sfx'
 
 interface Mission {
@@ -33,6 +34,9 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
   const [assigned, setAssigned] = useState<AssignedMission[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [category, setCategory] = useState<string | null>(null)
+  const [showRoulette, setShowRoulette] = useState(false)
+  const [rouletteComplete, setRouletteComplete] = useState(false)
 
   const fetchMissions = useCallback(async () => {
     const response = await fetch(`/api/operations/${operationId}/missions`, {
@@ -44,6 +48,7 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
       throw new Error('Nao foi possivel carregar as missoes.')
     }
 
+    setCategory(data.category ?? null)
     const data = await response.json()
     setMissions(data.missions ?? [])
     setAssigned(data.assigned ?? [])
@@ -69,7 +74,17 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
     () => assigned.find((item) => item.status === 'completed'),
     [assigned]
   )
+handleReceiveMission = () => {
+    playSfx('select', 0.3)
+    setShowRoulette(true)
+  }
 
+  const handleRouletteComplete = () => {
+    setRouletteComplete(true)
+    setShowRoulette(false)
+  }
+
+  const 
   const missionsWithStatus = useMemo(
     () =>
       missions.map((mission) => {
@@ -107,8 +122,19 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
     return (
       <div className="p-4 space-y-3">
         {[1, 2, 3].map((item) => (
-          <div key={item} className="bg-surface border border-border rounded-sm p-4 space-y-2">
-            <div className="redacted h-3 w-20" />
+  // Verifica se deve mostrar botão "Receber Missão"
+  const shouldShowReceiveButton = !loading && !completedMission && !selectedAssignedMission && 
+                                   missions.length > 0 && !rouletteComplete
+
+  return (
+    <div>
+      {showRoulette && category && (
+        <CategoryRoulette 
+          selectedCategory={category}
+          onComplete={handleRouletteComplete}
+        />
+      )}
+   <div className="redacted h-3 w-20" />
             <div className="redacted h-5 w-3/4" />
             <div className="redacted h-4 w-full" />
             <div className="redacted h-4 w-2/3" />

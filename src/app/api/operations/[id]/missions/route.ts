@@ -94,6 +94,10 @@ export async function GET(_request: Request, context: RouteContext) {
     .eq('user_id', user.id)
     .eq('day_number', dayNumber)
 
-  return NextResponse.json({ missions: missions || [], assigned: assigned || [] })
+  return NextResponse.json({ 
+    missions: missions || [], 
+    assigned: assigned || [],
+    category: pool.mission_ids.length > 0 ? missions?.[0]?.category : null
+  })
 }
 
