@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { MissionPool } from '@/components/missions/MissionPool'
 import { CategoryRoulette } from '@/components/missions/CategoryRoulette'
 import { playSfx } from '@/lib/sfx'
+import { Button } from '@/components/ui/Button'
 
 interface Mission {
   id: string
@@ -48,8 +49,8 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
       throw new Error('Nao foi possivel carregar as missoes.')
     }
 
-    setCategory(data.category ?? null)
     const data = await response.json()
+    setCategory(data.category ?? null)
     setMissions(data.missions ?? [])
     setAssigned(data.assigned ?? [])
   }, [operationId])
@@ -74,8 +75,16 @@ export function MissionPoolWrapper({ operationId, resetHour }: Props) {
     () => assigned.find((item) => item.status === 'completed'),
     [assigned]
   )
-handleReceiveMission = () => {
-    playSfx('select', 0.3)
+
+  // Redireciona automaticamente para a missão aceita
+  useEffect(() => {
+    if (!loading && selectedAssignedMission) {
+      router.push(`/operations/${operationId}/missions/${selectedAssignedMission.id}`)
+    }
+  }, [loading, selectedAssignedMission, router, operationId])
+
+  const handleReceiveMission = () => {
+    playSfx('click', 0.3)
     setShowRoulette(true)
   }
 
@@ -84,7 +93,6 @@ handleReceiveMission = () => {
     setShowRoulette(false)
   }
 
-  const 
   const missionsWithStatus = useMemo(
     () =>
       missions.map((mission) => {
@@ -118,23 +126,13 @@ handleReceiveMission = () => {
     }
   }
 
+  // Loading state
   if (loading) {
     return (
       <div className="p-4 space-y-3">
         {[1, 2, 3].map((item) => (
-  // Verifica se deve mostrar botão "Receber Missão"
-  const shouldShowReceiveButton = !loading && !completedMission && !selectedAssignedMission && 
-                                   missions.length > 0 && !rouletteComplete
-
-  return (
-    <div>
-      {showRoulette && category && (
-        <CategoryRoulette 
-          selectedCategory={category}
-          onComplete={handleRouletteComplete}
-        />
-      )}
-   <div className="redacted h-3 w-20" />
+          <div key={item} className="border border-[#242424] bg-warm rounded-sm p-4 space-y-2">
+            <div className="redacted h-3 w-20" />
             <div className="redacted h-5 w-3/4" />
             <div className="redacted h-4 w-full" />
             <div className="redacted h-4 w-2/3" />
@@ -144,48 +142,78 @@ handleReceiveMission = () => {
     )
   }
 
+  // Error state
+  if (error) {
+    return (
+      <div className="px-4 pt-4">
+        <div className="border border-[#8b1a1a] bg-[#1f0d0d] rounded-sm p-3">
+          <p className="font-['Special_Elite'] text-[11px] text-[#c94040] uppercase tracking-wider">TRANSMISSAO INTERROMPIDA</p>
+          <p className="font-['Inter'] text-xs text-[#e8e4d9] mt-1">{error}</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Missão concluída - aguardar próxima virada
+  if (completedMission) {
+    return (
+      <div className="px-4 pt-4 pb-4">
+        <button
+          onClick={() => router.push(`/operations/${operationId}/missions/${completedMission.id}`)}
+          className="w-full font-['Special_Elite'] text-xs uppercase tracking-wider border border-[#4a8c4a] bg-[#0f0e0a] text-[#4a8c4a] py-3 rounded-sm"
+        >
+          ✓ MISSAO DO DIA CONCLUIDA - VER DETALHES
+        </button>
+        <p className="text-center text-[#6b6660] font-['Inter'] text-xs mt-3">
+          Aguarde a proxima virada para novas missoes
+        </p>
+      </div>
+    )
+  }
+
+  // Se há missão selecionada, redireciona automaticamente (não mostra nada aqui)
+  if (selectedAssignedMission) {
+    return (
+      <div className="px-4 pt-12 pb-4 text-center">
+        <p className="text-[#6b6660] font-['Inter'] text-xs">
+          Redirecionando para sua missao...
+        </p>
+      </div>
+    )
+  }
+
+  // Verifica se deve mostrar botão "Receber Missão"
+  const shouldShowReceiveButton = !completedMission && !selectedAssignedMission && 
+                                   missions.length > 0 && !rouletteComplete
+
   return (
     <div>
-      {completedMission ? (
-        <div className="px-4 pt-4 pb-4">
-          <button
-            onClick={() => router.push(`/operations/${operationId}/missions/${completedMission.id}`)}
-            className="w-full font-['Special_Elite'] text-xs uppercase tracking-wider border border-[#4a8c4a] bg-[#0f0e0a] text-[#4a8c4a] py-3 rounded-sm"
-          >
-            ✓ MISSAO DO DIA CONCLUIDA - VER DETALHES
-          </button>
-          <p className="text-center text-[#6b6660] font-['Inter'] text-xs mt-3">
-            Aguarde a proxima virada para novas missoes
-          </p>
+      {/* Roleta de categoria */}
+      {showRoulette && category && (
+        <CategoryRoulette 
+          selectedCategory={category}
+          onComplete={handleRouletteComplete}
+        />
+      )}
+
+      {/* Botão Receber Missão */}
+      {shouldShowReceiveButton && !showRoulette && (
+        <div className="px-4 pt-4 pb-6">
+          <Button fullWidth onClick={handleReceiveMission}>
+            RECEBER MISSAO
+          </Button>
         </div>
-      ) : selectedAssignedMission ? (
-        <div className="px-4 pt-4">
-          <button
-            onClick={() => router.push(`/operations/${operationId}/missions/${selectedAssignedMission.id}`)}
-            className="w-full font-['Special_Elite'] text-xs uppercase tracking-wider border border-[#3d3520] bg-[#0f0e0a] text-[#c9a227] py-3 rounded-sm"
-          >
-            CONTINUAR MISSAO EM ANDAMENTO
-          </button>
-      {!completedMission && (
+      )}
+
+      {/* Pool de missões (só aparece após roleta completar) */}
+      {rouletteComplete && (
         <MissionPool
           missions={missionsWithStatus}
           selectedMissionId={selectedAssignedMission?.mission_id}
           onSelectMission={handleSelectMission}
           resetHour={resetHour}
         />
-      )}  <div className="border border-[#8b1a1a] bg-[#1f0d0d] rounded-sm p-3">
-            <p className="font-['Special_Elite'] text-[11px] text-[#c94040] uppercase tracking-wider">TRANSMISSAO INTERROMPIDA</p>
-            <p className="font-['Inter'] text-xs text-[#e8e4d9] mt-1">{error}</p>
-          </div>
-        </div>
-      ) : null}
-
-      <MissionPool
-        missions={missionsWithStatus}
-        selectedMissionId={selectedAssignedMission?.mission_id}
-        onSelectMission={handleSelectMission}
-        resetHour={resetHour}
-      />
+      )}
     </div>
   )
 }
