@@ -5,7 +5,7 @@ import { Soundscape } from "@/components/layout/Soundscape";
 import NextTopLoader from "nextjs-toploader";
 
 const inter = Inter({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-inter",
   display: "swap",
   preload: false,
@@ -13,7 +13,7 @@ const inter = Inter({
 
 const specialElite = Special_Elite({
   weight: "400",
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   variable: "--font-special-elite",
   display: "swap",
   preload: false,
